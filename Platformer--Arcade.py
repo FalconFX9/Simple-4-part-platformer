@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import arcade
 
 SCREEN_WIDTH = 1000
