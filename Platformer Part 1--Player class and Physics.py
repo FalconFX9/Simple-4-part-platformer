@@ -25,8 +25,11 @@ clock = pygame.time.Clock()
 GAME_SPEED = 120
 
 # Create two multipliers that can be used for easy (and fun) modification of the game's physics
+ACCELERATION_MULTIPLIER = 1
 GRAVITY_MULTIPLIER = 1
-SLIDING_MULTIPLIER = 1
+
+# Create a friction constant that changes how slidy the player feels
+FRICTION = 0.05
 
 
 # Create a player class, that inherits from pygame.sprite.Sprite
@@ -38,11 +41,13 @@ class Player(pygame.sprite.Sprite):
         width = 40
         height = 40
 
+        # Override the image and rect attributes as is requires by pygame.sprite.Sprite
         self.image = pygame.Surface((width, height))
         self.image.fill(color)
 
         self.rect = self.image.get_rect()
 
+        # Create the prev_rect variable that will be used to store the position from the previous update cycle
         self.prev_rect = self.rect
 
         # Current speed of the player
@@ -84,7 +89,7 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self):
         # Makes the player jump.
-        # As with the gravity function, it is not necessary to use a function here.
+        # As with the gravity function, it is not necessary to use a function here (yet)
         self.speed_y = -7
 
     def update(self):
@@ -104,20 +109,21 @@ class Player(pygame.sprite.Sprite):
         # Apply the acceleration (depending on which key is presses)
         if self.direction == 1:
             if self.speed_x > -4:
-                self.speed_x -= 0.1 / SLIDING_MULTIPLIER
+                self.speed_x -= 0.1 * ACCELERATION_MULTIPLIER
         elif self.direction == 2:
             if self.speed_x < 4:
-                self.speed_x += 0.1 / SLIDING_MULTIPLIER
+                self.speed_x += 0.1 * ACCELERATION_MULTIPLIER
 
         # Apply friction to gradually slow the player down when no key is pressed (only in the X-axis)
         else:
-            if -(0.1 / SLIDING_MULTIPLIER) < self.speed_x < 0.1 / SLIDING_MULTIPLIER:
+            if self.speed_x > FRICTION:
+                self.speed_x -= FRICTION
+            elif self.speed_x < -FRICTION:
+                self.speed_x += FRICTION
+            else:
                 self.speed_x = 0
-            elif self.speed_x > 0:
-                self.speed_x -= 0.1 / SLIDING_MULTIPLIER
-            elif self.speed_x < 0:
-                self.speed_x += 0.1 / SLIDING_MULTIPLIER
 
+        # Create a copy of the previous state of the rect object (the player's position, width, height...)
         self.prev_rect = list(self.rect)
 
         # Update the player's position based on the speed.
@@ -127,7 +133,7 @@ class Player(pygame.sprite.Sprite):
 
 # The actual game loop
 def game():
-    # Create a player object
+    # Create an instance of the player class
     player = Player(BLUE)
 
     # Give the player a starting position that is relative to the player's size and position in order to allow resizing
