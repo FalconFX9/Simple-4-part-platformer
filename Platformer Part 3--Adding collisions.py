@@ -238,6 +238,7 @@ def game():
     platform_group = pygame.sprite.Group()
     level(all_sprites, platform_group)
 
+    # Assigns the player's platform variable to be equal to the platform sprite group (for use in collisions)
     player.platforms = platform_group
 
     # Update all the sprites and draw the entire screen once, since during gameplay, it will only update the part
