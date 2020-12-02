@@ -25,79 +25,12 @@ clock = pygame.time.Clock()
 GAME_SPEED = 120
 
 # Create three multipliers that can be used for easy (and fun) modification of the game's physics
-ACCELERATION_MULTIPLIER = 1
+ACCELERATION_MULTIPLIER = 5
 GRAVITY_MULTIPLIER = 1
 JUMP_MULTIPLIER = 1
 
 # Create a friction constant that changes how slidy the player feels
 FRICTION = 0.1
-
-
-class AI(pygame.sprite.Sprite):
-    def __init__(self, level):
-        super().__init__()
-
-        self.image = pygame.Surface((40, 40))
-        self.image.fill((0, 255, 0))
-
-        self.rect = self.image.get_rect()
-        self.rect.centerx = SCREEN_WIDTH//2
-        self.rect.bottom = SCREEN_HEIGHT
-        self.speed_x = 0
-        self.speed_y = 0
-
-        self.platforms = None
-        self.level = level
-        self.current_platform = -1
-
-    def jump(self):
-        # Makes the player jump.
-        # Now that jumping is more complex, a function makes more sense
-
-        # Move the player down 2 pixels in order to make sure that the platform detection is accurate
-        self.rect.y += 2
-        # Check if the player is touching any platforms
-        touching_platform = pygame.sprite.spritecollide(self, self.platforms, False)
-        # Move the player back up to it's original position after collisions have been checked
-        self.rect.y -= 2
-        # Only allow jumping if the player is touching a platform or is on the bottom of the window
-        if len(touching_platform) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
-            self.speed_y = -(7 * JUMP_MULTIPLIER)
-
-    def go_to_platform(self):
-        distance = self.level[self.current_platform].rect.x - self.rect.x
-        if distance < 0:
-            if -160 < distance < 0:
-                self.jump()
-            if self.speed_x > -4:
-                self.speed_x -= 0.1 * ACCELERATION_MULTIPLIER
-
-        elif distance > 0:
-            if 0 < distance < 160:
-                self.jump()
-            if self.speed_x < 4:
-                self.speed_x += 0.1 * ACCELERATION_MULTIPLIER
-
-    def update(self):
-        self.speed_y += 0.18 * GRAVITY_MULTIPLIER
-        if (self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.speed_y > 0) or (self.rect.y <= 0 and self.speed_y < 0):
-            self.speed_y = 0
-        self.go_to_platform()
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-        collided_platforms = pygame.sprite.spritecollide(self, self.platforms, False)
-        # For every platform hit, checks if the player was going up or down, and set the position of the player
-        # (top or bottom side) to the top or bottom of the hit platform, as well as reset the vertical speed to 0
-        for platform in collided_platforms:
-            if self.speed_y > 0:
-                self.rect.bottom = platform.rect.top
-                platform.image.fill((0, 255, 0))
-                self.current_platform = self.level.index(platform) - 1
-            elif self.speed_y < 0:
-                self.rect.top = platform.rect.bottom
-
-            self.speed_y = 0
-
 
 # Create a player class, that inherits from pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
@@ -202,8 +135,6 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.speed_x = 0
 
-        # Create a copy of the previous state of the rect object (the player's position, width, height...)
-        self.prev_rect = list(self.rect)
 
         # Update the position on the X-axis with the current speed
         self.rect.x += int(self.speed_x)
@@ -338,9 +269,6 @@ def game():
 
     # Create a group for the platforms and call the level function
     platform_group = pygame.sprite.Group()
-    ai = AI(level(all_sprites, platform_group))
-    all_sprites.add(ai)
-    ai.platforms = platform_group
 
     # Assigns the player's platform variable to be equal to the platform sprite group (for use in collisions)
     player.platforms = platform_group
@@ -371,7 +299,7 @@ def game():
         # Updating only the section of the display where the player was, and where the player is provides a
         # very significant performance boost on repl.it (not visible if running python on the desktop).
         # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
-        pygame.display.update((player.prev_rect, player.rect))
+        pygame.display.update()
 
         # Limit the framerate to limit the player's visual movement speed
         clock.tick(GAME_SPEED)
