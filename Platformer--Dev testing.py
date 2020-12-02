@@ -193,9 +193,27 @@ class Platform(pygame.sprite.Sprite):
         self.rect.y = y
 
 
+class Level:
+
+    def __init__(self):
+        self.file = None
+        self.platforms = []
+
+    def file_to_data(self, file):
+        pl_tag = 'platform'
+        loaded_file = open(file, 'r').read()
+        lines = loaded_file.splitlines()
+        while lines:
+            line = lines.pop(0)
+            parts = line.split()
+            if pl_tag == parts[0]:
+                parts.pop(0)
+                self.platforms.append(Platform(int(parts[0]), int(parts[1]), int(parts[2])))
+
+
 # Create a level function, which will contain all the platform creation
 # It takes two sprite groups, which are used for drawing and collisions of the platforms
-def level(all_sprites_group, platform_group):
+def level_dp(all_sprites_group, platform_group):
     # Create an empty list called platforms
     platforms = []
 
@@ -220,6 +238,12 @@ def level(all_sprites_group, platform_group):
         platform_group.add(platform)
 
     return platforms
+
+
+def gen_level(level: Level, asg, pg):
+    for platform in level.platforms:
+        asg.add(platform)
+        pg.add(platform)
 
 
 # Create a function that checks for and handles beating the level
@@ -256,6 +280,8 @@ def victory(player):
 
 # Create the game function
 def game():
+    lvl = Level()
+    lvl.file_to_data('level_data.dat')
     # Create an instance of the player class
     player = Player(BLUE)
 
@@ -269,7 +295,7 @@ def game():
 
     # Create a group for the platforms and call the level function
     platform_group = pygame.sprite.Group()
-
+    gen_level(lvl, all_sprites, platform_group)
     # Assigns the player's platform variable to be equal to the platform sprite group (for use in collisions)
     player.platforms = platform_group
 
