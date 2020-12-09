@@ -8,6 +8,6 @@ Added a level editor, in which you can create your own levels that can then be l
 the platformer.
 
 DEPENDANCIES:
-pygame
-arcade
+pygame,
+arcade,
 PIL (pillow)
