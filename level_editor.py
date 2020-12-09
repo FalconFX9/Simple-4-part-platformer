@@ -1,3 +1,8 @@
+"""
+TODO: BUGTEST LEVEL EDITOR
+      Test on different platforms
+      Add playtesting to the level editor? -- optional
+"""
 import arcade
 from arcade.gui import UIFlatButton, UIInputBox, UIManager
 from PIL import ImageColor
@@ -82,7 +87,7 @@ class LevelEditor(arcade.View):
                 bg_color_press=self.rect_color,
             )
 
-        platform_btn = UIFlatButton("", 1200, 500, width=self.rect_size, height=20, id='platform')
+        platform_btn = UIFlatButton("", 1200, 500, width=self.rect_size, height=10, id='platform')
         platform_btn.set_style_attrs(
             border_color=self.rect_color,
             border_color_hover=self.rect_color,
@@ -104,7 +109,7 @@ class LevelEditor(arcade.View):
         def save():
             file = open('level'+str(self.lvl_num)+'.dat', 'w')
             for platform in self.pl_list:
-                file.writelines('platform ' + str(platform[0]) + ' ' + str(platform[1]) + ' ' + str(platform[2]) + ' ' + str('#%02x%02x%02x' % tuple(platform[4])) + '\n')
+                file.writelines('platform ' + str(platform[0]) + ' ' + str(800 - platform[1]) + ' ' + str(platform[2]) + ' ' + str('#%02x%02x%02x' % tuple(platform[4])) + '\n')
             file.close()
             self.timer = time()
             self.save_msg = True
@@ -119,7 +124,7 @@ class LevelEditor(arcade.View):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if 0 < x < 999 - (self.rect_size/2) and 0 < y < 800 and button==1 and self.placing_pl:
             self.placing_pl = False
-            self.pl_list.append((x, y, self.rect_size, 20, self.rect_color))
+            self.pl_list.append((x, y, self.rect_size, 10, self.rect_color))
 
         for coords in self.pl_list:
             offset_x = coords[2]/2
@@ -136,7 +141,7 @@ class LevelEditor(arcade.View):
         for platform in self.pl_list:
             arcade.draw_rectangle_filled(platform[0], platform[1], platform[2], platform[3], platform[4])
         if self.placing_pl:
-            arcade.draw_rectangle_filled(self.mouse_x, self.mouse_y, self.rect_size, 20, self.rect_color)
+            arcade.draw_rectangle_filled(self.mouse_x, self.mouse_y, self.rect_size, 10, self.rect_color)
         if self.save_msg:
             if self.timer + 2 > time():
                 arcade.draw_text("Saved!", 500, 400, arcade.color.WHITE, 50, anchor_x='center')

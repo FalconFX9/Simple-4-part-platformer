@@ -6,6 +6,7 @@ In this part, we add a victory/reset screen for when the player beats the level 
 multipliers for the user to play with.
 """
 import pygame
+from PIL import ImageColor
 
 # Define the colors
 BLACK = (0, 0, 0)
@@ -178,19 +179,19 @@ class Player(pygame.sprite.Sprite):
 # Create the platform class, also based on pygame.sprite.Sprite
 class Platform(pygame.sprite.Sprite):
 
-    def __init__(self, width, x, y):
+    def __init__(self, width, x, y, color=RED):
         super().__init__()
 
         # Override the image attribute
         self.image = pygame.Surface((width, 10))
-        self.image.fill(RED)
+        self.image.fill(color)
 
         # Override the rect attribute
         self.rect = self.image.get_rect()
 
         # Set the position to the coordinates given as arguments
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.centerx = x
+        self.rect.centery = y
 
 
 class Level:
@@ -208,7 +209,7 @@ class Level:
             parts = line.split()
             if pl_tag == parts[0]:
                 parts.pop(0)
-                self.platforms.append(Platform(int(parts[0]), int(parts[1]), int(parts[2])))
+                self.platforms.append(Platform(int(parts[2]), int(parts[0]), int(parts[1]), ImageColor.getcolor(parts[3], 'RGB')))
 
 
 # Create a level function, which will contain all the platform creation
@@ -281,7 +282,7 @@ def victory(player):
 # Create the game function
 def game():
     lvl = Level()
-    lvl.file_to_data('level_data.dat')
+    lvl.file_to_data('level0.dat')
     # Create an instance of the player class
     player = Player(BLUE)
 
