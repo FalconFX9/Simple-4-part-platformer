@@ -9,6 +9,21 @@ from PIL import ImageColor
 from time import time
 
 
+class Button:
+
+    def __init__(self, centerx, centery, width, height):
+        self.centerx = centerx
+        self.centery = centery
+        self.width = width
+        self.height = height
+        self.x = self.centerx - (self.width / 2)
+        self.y = self.centery - (self.height / 2)
+
+    def update(self):
+        self.x = self.centerx - (self.width / 2)
+        self.y = self.centery - (self.height / 2)
+
+
 class LevelEditor(arcade.View):
 
     def __init__(self, window: arcade.Window):
@@ -25,6 +40,8 @@ class LevelEditor(arcade.View):
         self.lvl_num = 0
         self.timer = None
         self.save_msg = False
+        self.platform_btn = None
+        self.error_msg = None
 
     def setup(self):
         load_img_btn = UIFlatButton('Load custom platform image', 1200, 100, 375, 50, id='loadimgbtn')
@@ -54,12 +71,14 @@ class LevelEditor(arcade.View):
             try:
                 self.rect_size = int(text_box.text)
                 if 10 > self.rect_size:
-                    text_box.text = 'Must be over 10'
+                    self.error_msg = 'Must be over 10'
                     self.rect_size = 150
             except ValueError:
-                text_box.text = 'Must be an integer'
+                self.error_msg = 'Must be an integer'
                 self.rect_size = 150
-            self.ui_manager.find_by_id('platform').width = self.rect_size
+                text_box.text = "150"
+            self.platform_btn.width = self.rect_size
+            self.platform_btn.update()
 
         pl_color_box = UIInputBox(1200, 620, 200, 40, "#FF0000", 'pl_color')
 
@@ -73,20 +92,14 @@ class LevelEditor(arcade.View):
                 color = color[1:]
                 color = '0x' + color
                 color = hex(int(color, 16))
+                color = color[2:]
+                self.rect_color = ImageColor.getcolor("#" + color, 'RGB')
             except ValueError:
-                text_box.text = 'Must be an integer'
-                color = '0xFF0000'
-            color = color[2:]
-            self.rect_color = ImageColor.getcolor("#" + color, 'RGB')
-            self.ui_manager.find_by_id('platform').set_style_attrs(
-                border_color=self.rect_color,
-                border_color_hover=self.rect_color,
-                border_color_press=self.rect_color,
-                bg_color=self.rect_color,
-                bg_color_hover=self.rect_color,
-                bg_color_press=self.rect_color,
-            )
+                text_box.text = '#FF0000'
+                self.error_msg = 'Must be hex'
 
+        self.platform_btn = Button(1200, 500, self.rect_size, 10)
+        """
         platform_btn = UIFlatButton("", 1200, 500, width=self.rect_size, height=10, id='platform')
         platform_btn.set_style_attrs(
             border_color=self.rect_color,
@@ -100,16 +113,20 @@ class LevelEditor(arcade.View):
 
         @platform_btn.event('on_click')
         def select_pl():
+            print("selected platform")
             self.placing_pl = True
+        """
 
         save_btn = UIFlatButton("Save level", 1200, 50, 150, 40, id='save')
         self.ui_manager.add_ui_element(save_btn)
 
         @save_btn.event('on_click')
         def save():
-            file = open('level'+str(self.lvl_num)+'.dat', 'w')
+            file = open('level' + str(self.lvl_num) + '.dat', 'w')
             for platform in self.pl_list:
-                file.writelines('platform ' + str(platform[0]) + ' ' + str(800 - platform[1]) + ' ' + str(platform[2]) + ' ' + str('#%02x%02x%02x' % tuple(platform[4])) + '\n')
+                file.writelines(
+                    'platform ' + str(platform[0]) + ' ' + str(800 - platform[1]) + ' ' + str(platform[2]) + ' ' + str(
+                        '#%02x%02x%02x' % tuple(platform[4])) + '\n')
             file.close()
             self.timer = time()
             self.save_msg = True
@@ -122,13 +139,21 @@ class LevelEditor(arcade.View):
         self.mouse_y = y
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        if 0 < x < 999 - (self.rect_size/2) and 0 < y < 800 and button==1 and self.placing_pl:
+        print(x, y, button, self.platform_btn.x, self.platform_btn.y, self.platform_btn.y + self.platform_btn.height)
+        if self.platform_btn.x < x < self.platform_btn.x + self.platform_btn.width and \
+                self.platform_btn.y < y < self.platform_btn.y + self.platform_btn.height and \
+                button == 1:
+            self.placing_pl = True
+            print('button')
+
+        if 0 < x < 999 - (self.rect_size / 2) and 0 < y < 800 and button == 1 and self.placing_pl:
             self.placing_pl = False
             self.pl_list.append((x, y, self.rect_size, 10, self.rect_color))
 
         for coords in self.pl_list:
-            offset_x = coords[2]/2
-            if coords[0] - offset_x < x < coords[0] + offset_x and coords[1] - 10 < y < coords[1] + 10 and not self.placing_pl and button==4:
+            offset_x = coords[2] / 2
+            if coords[0] - offset_x < x < coords[0] + offset_x and coords[1] - 10 < y < coords[
+                1] + 10 and not self.placing_pl and button == 4:
                 self.pl_list.remove(coords)
 
     def on_draw(self):
@@ -137,7 +162,10 @@ class LevelEditor(arcade.View):
         arcade.draw_text("Platform size (pixels)", 1200, 760, arcade.color.WHITE, 30, anchor_x='center')
         arcade.draw_text("Platform color (hex)", 1200, 650, arcade.color.WHITE, 30, anchor_x='center')
         arcade.draw_text("Platform:", 1200, 520, arcade.color.WHITE, 30, anchor_x='center')
-        self.ui_manager.find_by_id('platform').width = self.rect_size
+        arcade.draw_rectangle_filled(self.platform_btn.centerx,
+                                     self.platform_btn.centery,
+                                     self.rect_size, 10,
+                                     self.rect_color)
         for platform in self.pl_list:
             arcade.draw_rectangle_filled(platform[0], platform[1], platform[2], platform[3], platform[4])
         if self.placing_pl:
@@ -147,6 +175,17 @@ class LevelEditor(arcade.View):
                 arcade.draw_text("Saved!", 500, 400, arcade.color.WHITE, 50, anchor_x='center')
             else:
                 self.save_msg = False
+                self.timer = None
+
+        if self.error_msg:
+            if self.timer:
+                if self.timer + 2 > time():
+                    arcade.draw_text(self.error_msg, 500, 400, arcade.color.WHITE, 50, anchor_x='center')
+                else:
+                    self.error_msg = None
+                    self.timer = None
+            else:
+                self.timer = time()
 
 
 screen = arcade.Window(1400, 800, "Level Editor", update_rate=1 / 120)
