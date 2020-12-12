@@ -9,5 +9,4 @@ the platformer.
 
 DEPENDANCIES:
 pygame,
-arcade,
 PIL (pillow)
