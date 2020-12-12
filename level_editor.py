@@ -7,6 +7,7 @@ import arcade
 from arcade.gui import UIFlatButton, UIInputBox, UIManager
 from PIL import ImageColor
 from time import time
+from os import path
 
 
 class Button:
@@ -99,23 +100,6 @@ class LevelEditor(arcade.View):
                 self.error_msg = 'Must be hex'
 
         self.platform_btn = Button(1200, 500, self.rect_size, 10)
-        """
-        platform_btn = UIFlatButton("", 1200, 500, width=self.rect_size, height=10, id='platform')
-        platform_btn.set_style_attrs(
-            border_color=self.rect_color,
-            border_color_hover=self.rect_color,
-            border_color_press=self.rect_color,
-            bg_color=self.rect_color,
-            bg_color_hover=self.rect_color,
-            bg_color_press=self.rect_color
-        )
-        self.ui_manager.add_ui_element(platform_btn)
-
-        @platform_btn.event('on_click')
-        def select_pl():
-            print("selected platform")
-            self.placing_pl = True
-        """
 
         save_btn = UIFlatButton("Save level", 1200, 50, 150, 40, id='save')
         self.ui_manager.add_ui_element(save_btn)
@@ -139,12 +123,10 @@ class LevelEditor(arcade.View):
         self.mouse_y = y
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        print(x, y, button, self.platform_btn.x, self.platform_btn.y, self.platform_btn.y + self.platform_btn.height)
         if self.platform_btn.x < x < self.platform_btn.x + self.platform_btn.width and \
                 self.platform_btn.y < y < self.platform_btn.y + self.platform_btn.height and \
                 button == 1:
             self.placing_pl = True
-            print('button')
 
         if 0 < x < 999 - (self.rect_size / 2) and 0 < y < 800 and button == 1 and self.placing_pl:
             self.placing_pl = False

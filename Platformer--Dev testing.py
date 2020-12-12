@@ -7,6 +7,7 @@ multipliers for the user to play with.
 """
 import pygame
 from PIL import ImageColor
+from os import path
 
 # Define the colors
 BLACK = (0, 0, 0)
@@ -194,13 +195,19 @@ class Platform(pygame.sprite.Sprite):
         self.rect.centery = y
 
 
-class Level:
+class Levels:
 
     def __init__(self):
-        self.file = None
-        self.platforms = []
+        self.levels = []
 
-    def file_to_data(self, file):
+    def load_all_levels(self):
+        n = 0
+        if path.exists('level'+str(n)+'.dat'):
+            self.levels.append(self.file_to_data('level'+str(n)+'.dat'))
+
+    @staticmethod
+    def file_to_data(file):
+        platforms = []
         pl_tag = 'platform'
         loaded_file = open(file, 'r').read()
         lines = loaded_file.splitlines()
@@ -209,7 +216,9 @@ class Level:
             parts = line.split()
             if pl_tag == parts[0]:
                 parts.pop(0)
-                self.platforms.append(Platform(int(parts[2]), int(parts[0]), int(parts[1]), ImageColor.getcolor(parts[3], 'RGB')))
+                platforms.append(Platform(int(parts[2]), int(parts[0]), int(parts[1]), ImageColor.getcolor(parts[3], 'RGB')))
+
+        return platforms
 
 
 # Create a level function, which will contain all the platform creation
@@ -241,14 +250,14 @@ def level_dp(all_sprites_group, platform_group):
     return platforms
 
 
-def gen_level(level: Level, asg, pg):
-    for platform in level.platforms:
+def gen_level(level, asg, pg):
+    for platform in level:
         asg.add(platform)
         pg.add(platform)
 
 
 # Create a function that checks for and handles beating the level
-def victory(player):
+def victory(player, game_obj):
     # Create a font object, to display the victory text.
     font = pygame.font.SysFont('comicsansms', 40)
     # Checks if the player reaches a certain position (jumping onto the last platform)
@@ -262,14 +271,19 @@ def victory(player):
                     pygame.quit()
                 # Checks if the player presses R, our chosen restart key. If it is pressed, relaunch the game.
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:
-                        game()
+                    if event.key == pygame.K_SPACE:
+                        if game_obj.id < len(game_obj.levels) - 1:
+                            game_obj.id += 1
+                            game_obj.run()
+                        else:
+                            game_obj.id = 0
+                            game_obj.run()
 
             # Sets the black background
             screen.fill(BLACK)
 
             # Displays the victory message on screen
-            text = font.render('Press R to restart', True, BLUE)
+            text = font.render('Press space to go to the next level', True, BLUE)
             screen.blit(text, (SCREEN_WIDTH // 2 - (text.get_rect()[2]//2), SCREEN_HEIGHT // 2 - (text.get_rect()[3]//2)))
 
             # Updates the entire display (since it is a static screen, there is no need for any optimization)
@@ -280,56 +294,62 @@ def victory(player):
 
 
 # Create the game function
-def game():
-    lvl = Level()
-    lvl.file_to_data('level0.dat')
-    # Create an instance of the player class
-    player = Player(BLUE)
+class Game:
 
-    # Give the player a starting position that is relative to the player's size and position in order to allow resizing
-    player.rect.x = (SCREEN_WIDTH // 2) - 20
-    player.rect.y = SCREEN_HEIGHT - player.rect.height
+    def __init__(self):
+        self.id = 0
+        levels = Levels()
+        levels.load_all_levels()
+        self.levels = levels.levels
 
-    # Add the player to the sprite group. This allows us to call the draw() method.
-    all_sprites = pygame.sprite.Group()
-    all_sprites.add(player)
+    def run(self):
+        # Create an instance of the player class
+        player = Player(BLUE)
 
-    # Create a group for the platforms and call the level function
-    platform_group = pygame.sprite.Group()
-    gen_level(lvl, all_sprites, platform_group)
-    # Assigns the player's platform variable to be equal to the platform sprite group (for use in collisions)
-    player.platforms = platform_group
+        # Give the player a starting position that is relative to the player's size and position in order to allow resizing
+        player.rect.x = (SCREEN_WIDTH // 2) - 20
+        player.rect.y = SCREEN_HEIGHT - player.rect.height
 
-    # Update all the sprites and draw the entire screen once, since during gameplay, it will only update the part
-    # where the player is
-    screen.fill(BLACK)
-    all_sprites.update()
-    all_sprites.draw(screen)
-    pygame.display.flip()
+        # Add the player to the sprite group. This allows us to call the draw() method.
+        all_sprites = pygame.sprite.Group()
+        all_sprites.add(player)
 
-    # An infinite while loop for when the game is running
-    while True:
-        # Fill the screen with a background color
+        # Create a group for the platforms and call the level function
+        platform_group = pygame.sprite.Group()
+        gen_level(self.levels[self.id], all_sprites, platform_group)
+        # Assigns the player's platform variable to be equal to the platform sprite group (for use in collisions)
+        player.platforms = platform_group
+
+        # Update all the sprites and draw the entire screen once, since during gameplay, it will only update the part
+        # where the player is
         screen.fill(BLACK)
-
-        # Call the player's event loop (using the function makes the game loop clearer and cleaner)
-        player.handle_keys()
-
-        # Call the victory function, to check if the player has reached the last platform
-        victory(player)
-
-        # Call the sprite group's update method (in this instance, the player's update method), then draw the player
         all_sprites.update()
         all_sprites.draw(screen)
+        pygame.display.flip()
 
-        # Refresh the display
-        # Updating only the section of the display where the player was, and where the player is provides a
-        # very significant performance boost on repl.it (not visible if running python on the desktop).
-        # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
-        pygame.display.update()
+        # An infinite while loop for when the game is running
+        while True:
+            # Fill the screen with a background color
+            screen.fill(BLACK)
 
-        # Limit the framerate to limit the player's visual movement speed
-        clock.tick(GAME_SPEED)
+            # Call the player's event loop (using the function makes the game loop clearer and cleaner)
+            player.handle_keys()
+
+            # Call the victory function, to check if the player has reached the last platform
+            victory(player, self)
+
+            # Call the sprite group's update method (in this instance, the player's update method), then draw the player
+            all_sprites.update()
+            all_sprites.draw(screen)
+
+            # Refresh the display
+            # Updating only the section of the display where the player was, and where the player is provides a
+            # very significant performance boost on repl.it (not visible if running python on the desktop).
+            # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
+            pygame.display.update()
+
+            # Limit the framerate to limit the player's visual movement speed
+            clock.tick(GAME_SPEED)
 
 
 # Runs the code if the file run is this one (python convention)
@@ -337,4 +357,5 @@ if __name__ == '__main__':
     # Initialize pygame
     pygame.init()
     # Run the game
-    game()
+    game = Game()
+    game.run()
