@@ -101,6 +101,23 @@ class LevelEditor(arcade.View):
 
         self.platform_btn = Button(1200, 500, self.rect_size, 10)
 
+        lvl_number = UIInputBox(1200, 400, 200, 40, '0', 'lvl_num')
+
+        @lvl_number.event('on_enter')
+        def update_lvl():
+            text_box = self.ui_manager.find_by_id('lvl_num')
+
+            try:
+                num = int(text_box.text)
+                self.lvl_num = num
+                self.error_msg = 'Level number changed!'
+            except ValueError:
+                text_box.text = '0'
+                self.error_msg = 'Must be integer'
+                self.lvl_num = 0
+
+        self.ui_manager.add_ui_element(lvl_number)
+
         save_btn = UIFlatButton("Save level", 1200, 50, 150, 40, id='save')
         self.ui_manager.add_ui_element(save_btn)
 
@@ -143,11 +160,13 @@ class LevelEditor(arcade.View):
         arcade.draw_line(1000, 0, 1000, 800, arcade.color.WHITE)
         arcade.draw_text("Platform size (pixels)", 1200, 760, arcade.color.WHITE, 30, anchor_x='center')
         arcade.draw_text("Platform color (hex)", 1200, 650, arcade.color.WHITE, 30, anchor_x='center')
+        arcade.draw_text("Level number", 1200, 430, arcade.color.WHITE, 30, anchor_x='center')
         arcade.draw_text("Platform:", 1200, 520, arcade.color.WHITE, 30, anchor_x='center')
         arcade.draw_rectangle_filled(self.platform_btn.centerx,
                                      self.platform_btn.centery,
                                      self.rect_size, 10,
                                      self.rect_color)
+        arcade.draw_rectangle_filled(500, 775, 1000, 50, arcade.color.GREEN)
         for platform in self.pl_list:
             arcade.draw_rectangle_filled(platform[0], platform[1], platform[2], platform[3], platform[4])
         if self.placing_pl:

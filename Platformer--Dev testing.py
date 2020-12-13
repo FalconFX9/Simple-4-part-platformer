@@ -6,8 +6,7 @@ In this part, we add a victory/reset screen for when the player beats the level 
 multipliers for the user to play with.
 """
 import pygame
-from PIL import ImageColor
-from os import path
+import library
 
 # Define the colors
 BLACK = (0, 0, 0)
@@ -27,12 +26,13 @@ clock = pygame.time.Clock()
 GAME_SPEED = 120
 
 # Create three multipliers that can be used for easy (and fun) modification of the game's physics
-ACCELERATION_MULTIPLIER = 5
+ACCELERATION_MULTIPLIER = 1
 GRAVITY_MULTIPLIER = 1
 JUMP_MULTIPLIER = 1
 
 # Create a friction constant that changes how slidy the player feels
-FRICTION = 0.1
+FRICTION = 0.05
+
 
 # Create a player class, that inherits from pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
@@ -195,61 +195,6 @@ class Platform(pygame.sprite.Sprite):
         self.rect.centery = y
 
 
-class Levels:
-
-    def __init__(self):
-        self.levels = []
-
-    def load_all_levels(self):
-        n = 0
-        if path.exists('level'+str(n)+'.dat'):
-            self.levels.append(self.file_to_data('level'+str(n)+'.dat'))
-
-    @staticmethod
-    def file_to_data(file):
-        platforms = []
-        pl_tag = 'platform'
-        loaded_file = open(file, 'r').read()
-        lines = loaded_file.splitlines()
-        while lines:
-            line = lines.pop(0)
-            parts = line.split()
-            if pl_tag == parts[0]:
-                parts.pop(0)
-                platforms.append(Platform(int(parts[2]), int(parts[0]), int(parts[1]), ImageColor.getcolor(parts[3], 'RGB')))
-
-        return platforms
-
-
-# Create a level function, which will contain all the platform creation
-# It takes two sprite groups, which are used for drawing and collisions of the platforms
-def level_dp(all_sprites_group, platform_group):
-    # Create an empty list called platforms
-    platforms = []
-
-    # Create all the platforms -- these values give a playable level, but they are essentially completely arbitrary
-    platforms.append(Platform(50, 450, 50))
-    platforms.append(Platform(100, 350, 100))
-    platforms.append(Platform(80, 200, 150))
-    platforms.append(Platform(50, 100, 200))
-    platforms.append(Platform(80, 320, 210))
-    platforms.append(Platform(60, 190, 250))
-    platforms.append(Platform(150, 0, 320))
-    platforms.append(Platform(80, 260, 400))
-    platforms.append(Platform(60, 420, 460))
-    platforms.append(Platform(100, 620, 500))
-    platforms.append(Platform(40, 800, 580))
-    platforms.append(Platform(60, 600, 610))
-    platforms.append(Platform(100, 650, 700))
-
-    # Add all the platforms in the list to both sprite groups
-    for platform in platforms:
-        all_sprites_group.add(platform)
-        platform_group.add(platform)
-
-    return platforms
-
-
 def gen_level(level, asg, pg):
     for platform in level:
         asg.add(platform)
@@ -261,7 +206,7 @@ def victory(player, game_obj):
     # Create a font object, to display the victory text.
     font = pygame.font.SysFont('comicsansms', 40)
     # Checks if the player reaches a certain position (jumping onto the last platform)
-    if player.rect.bottom <= 50 and player.rect.left <= 500 and player.rect.right >= 450:
+    if player.rect.bottom <= 50:
         # If the player reaches it, runs an infinite loop
         while True:
             # This victory screen has it's own event loop
@@ -298,7 +243,7 @@ class Game:
 
     def __init__(self):
         self.id = 0
-        levels = Levels()
+        levels = library.Levels()
         levels.load_all_levels()
         self.levels = levels.levels
 
@@ -331,7 +276,7 @@ class Game:
         while True:
             # Fill the screen with a background color
             screen.fill(BLACK)
-
+            screen.fill((30, 255, 30), (0, 0, 1000, 50))
             # Call the player's event loop (using the function makes the game loop clearer and cleaner)
             player.handle_keys()
 
