@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Author: Arthur Goetzke-Coburn
-This is the fourth and final part in the 4-part platformer.
+This is the fifth and final part in the 5-part platformer.
 In this part, we add a victory/reset screen for when the player beats the level we made, as well as adding some
 multipliers for the user to play with.
 """
@@ -195,10 +195,12 @@ class Platform(pygame.sprite.Sprite):
         self.rect.centery = y
 
 
+"New code"
 def gen_level(level, asg, pg):
     for platform in level:
         asg.add(platform)
         pg.add(platform)
+"End"
 
 
 # Create a function that checks for and handles beating the level
@@ -217,18 +219,22 @@ def victory(player, game_obj):
                 # Checks if the player presses R, our chosen restart key. If it is pressed, relaunch the game.
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        "Edits to the code"
                         if game_obj.id < len(game_obj.levels) - 1:
                             game_obj.id += 1
                             game_obj.run()
                         else:
                             game_obj.id = 0
                             game_obj.run()
+                        "End"
 
             # Sets the black background
             screen.fill(BLACK)
 
             # Displays the victory message on screen
+            "Edit to the code"
             text = font.render('Press space to go to the next level', True, BLUE)
+            "End"
             screen.blit(text, (SCREEN_WIDTH // 2 - (text.get_rect()[2]//2), SCREEN_HEIGHT // 2 - (text.get_rect()[3]//2)))
 
             # Updates the entire display (since it is a static screen, there is no need for any optimization)
@@ -238,7 +244,8 @@ def victory(player, game_obj):
             clock.tick(GAME_SPEED)
 
 
-# Create the game function
+"Substantial edit to the code. Use Game class template."
+# Create the game class
 class Game:
 
     def __init__(self):
@@ -247,6 +254,8 @@ class Game:
         levels.load_all_levels()
         self.levels = levels.levels
 
+    # The run function is essentially just the game function from part 4, with a few minor tweaks.
+    # Tell the students to use the Game class template, and copy-paste the code from the Game function into here.
     def run(self):
         # Create an instance of the player class
         player = Player(BLUE)
@@ -261,7 +270,10 @@ class Game:
 
         # Create a group for the platforms and call the level function
         platform_group = pygame.sprite.Group()
+        "New code"
+        # This loads all the platforms in a level to the sprite groups
         gen_level(self.levels[self.id], all_sprites, platform_group)
+        "End"
         # Assigns the player's platform variable to be equal to the platform sprite group (for use in collisions)
         player.platforms = platform_group
 
@@ -281,26 +293,27 @@ class Game:
             player.handle_keys()
 
             # Call the victory function, to check if the player has reached the last platform
+            "Edit to the code"
             victory(player, self)
+            "End"
 
             # Call the sprite group's update method (in this instance, the player's update method), then draw the player
             all_sprites.update()
             all_sprites.draw(screen)
 
             # Refresh the display
-            # Updating only the section of the display where the player was, and where the player is provides a
-            # very significant performance boost on repl.it (not visible if running python on the desktop).
-            # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
             pygame.display.update()
 
             # Limit the framerate to limit the player's visual movement speed
             clock.tick(GAME_SPEED)
 
 
-# Runs the code if the file run is this one (python convention)
+# Runs the code
 if __name__ == '__main__':
     # Initialize pygame
     pygame.init()
+    "Edit to the code"
     # Run the game
     game = Game()
     game.run()
+    "End"

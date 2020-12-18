@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Author: Arthur Goetzke-Coburn
-This is the fourth and final part in the 4-part platformer.
+This is the fourth part in the 5-part platformer.
 In this part, we add a victory/reset screen for when the player beats the level we made, as well as adding some
 multipliers for the user to play with.
 Copy over the code from part 3. No new class templates needed.
