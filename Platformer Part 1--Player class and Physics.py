@@ -2,8 +2,8 @@
 """
 Author: Arthur Goetzke-Coburn
 This is the first part in a simple, 4 part platformer
-It is preferable that classes and super-classes are a known concept before starting this project
 This part gives a window with a moveable player, with it's own physics.
+Class templates required: Player
 """
 import pygame
 
@@ -46,9 +46,6 @@ class Player(pygame.sprite.Sprite):
         self.image.fill(color)
 
         self.rect = self.image.get_rect()
-
-        # Create the prev_rect variable that will be used to store the position from the previous update cycle
-        self.prev_rect = self.rect
 
         # Current speed of the player
         self.speed_x = 0
@@ -123,9 +120,6 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.speed_x = 0
 
-        # Create a copy of the previous state of the rect object (the player's position, width, height...)
-        self.prev_rect = list(self.rect)
-
         # Update the player's position based on the speed.
         self.rect.x += int(self.speed_x)
         self.rect.y += int(self.speed_y)
@@ -141,8 +135,8 @@ def game():
     player.rect.y = SCREEN_HEIGHT - player.rect.height
 
     # Add the player to the sprite group. This allows us to call the draw() method.
-    sprite_group = pygame.sprite.Group()
-    sprite_group.add(player)
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(player)
 
     # An infinite while loop for when the game is running
     while True:
@@ -153,20 +147,17 @@ def game():
         player.handle_keys()
 
         # Call the sprite group's update method (in this instance, the player's update method), then draw the player
-        sprite_group.update()
-        sprite_group.draw(screen)
+        all_sprites.update()
+        all_sprites.draw(screen)
 
         # Refresh the display
-        # Updating only the section of the display where the player was, and where the player is provides a
-        # very significant performance boost on repl.it (not visible if running python on the desktop).
-        # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
-        pygame.display.update((player.prev_rect, player.rect))
+        pygame.display.update()
 
         # Limit the framerate to limit the player's visual movement speed
         clock.tick(GAME_SPEED)
 
 
-# Runs the code if the file run is this one (python convention)
+# Runs the code
 if __name__ == '__main__':
     # Initialize pygame
     pygame.init()

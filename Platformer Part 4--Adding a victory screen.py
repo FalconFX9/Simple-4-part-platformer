@@ -4,6 +4,7 @@ Author: Arthur Goetzke-Coburn
 This is the fourth and final part in the 4-part platformer.
 In this part, we add a victory/reset screen for when the player beats the level we made, as well as adding some
 multipliers for the user to play with.
+Copy over the code from part 3. No new class templates needed.
 """
 import pygame
 
@@ -27,10 +28,13 @@ GAME_SPEED = 120
 # Create three multipliers that can be used for easy (and fun) modification of the game's physics
 ACCELERATION_MULTIPLIER = 1
 GRAVITY_MULTIPLIER = 1
+
+"New code:"
 JUMP_MULTIPLIER = 1
+"end"
 
 # Create a friction constant that changes how slidy the player feels
-FRICTION = 0.1
+FRICTION = 0.05
 
 
 # Create a player class, that inherits from pygame.sprite.Sprite
@@ -103,7 +107,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.y -= 2
         # Only allow jumping if the player is touching a platform or is on the bottom of the window
         if len(touching_platform) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
+            "Edit to code"
             self.speed_y = -(7 * JUMP_MULTIPLIER)
+            "End"
 
     def update(self):
         # Overriding of the pygame.sprite.Sprite.update function, in order to have our own movement/physics
@@ -223,6 +229,7 @@ def level(all_sprites_group, platform_group):
         platform_group.add(platform)
 
 
+"New code"
 # Create a function that checks for and handles beating the level
 def victory(player):
     # Create a font object, to display the victory text.
@@ -253,6 +260,7 @@ def victory(player):
 
             # Limits the FPS for performance/bandwidth reasons
             clock.tick(GAME_SPEED)
+"End"
 
 
 # Create the game function
@@ -290,24 +298,23 @@ def game():
         # Call the player's event loop (using the function makes the game loop clearer and cleaner)
         player.handle_keys()
 
+        "New code"
         # Call the victory function, to check if the player has reached the last platform
         victory(player)
+        "End"
 
         # Call the sprite group's update method (in this instance, the player's update method), then draw the player
         all_sprites.update()
         all_sprites.draw(screen)
 
-        # Refresh the display
-        # Updating only the section of the display where the player was, and where the player is provides a
-        # very significant performance boost on repl.it (not visible if running python on the desktop).
-        # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
-        pygame.display.update((player.prev_rect, player.rect))
+        # Refresh the diplay
+        pygame.display.update()
 
         # Limit the framerate to limit the player's visual movement speed
         clock.tick(GAME_SPEED)
 
 
-# Runs the code if the file run is this one (python convention)
+# Runs the code
 if __name__ == '__main__':
     # Initialize pygame
     pygame.init()

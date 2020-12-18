@@ -3,6 +3,7 @@
 Author: Arthur Goetzke-Coburn
 This is the third part in a simple 4-part platformer.
 In this part, we create the collision mechanics, in order to give the player the ability of going up onto the platforms.
+Copy over the code from part 2. No new class templates needed.
 """
 import pygame
 
@@ -137,6 +138,7 @@ class Player(pygame.sprite.Sprite):
         # Create a copy of the previous state of the rect object (the player's position, width, height...)
         self.prev_rect = list(self.rect)
 
+        "New code"
         # Update the position on the X-axis with the current speed
         self.rect.x += int(self.speed_x)
 
@@ -174,6 +176,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.top = platform.rect.bottom
 
             self.speed_y = 0
+        "End"
 
 
 # Create the platform class, also based on pygame.sprite.Sprite
@@ -260,16 +263,13 @@ def game():
         all_sprites.draw(screen)
 
         # Refresh the display
-        # Updating only the section of the display where the player was, and where the player is provides a
-        # very significant performance boost on repl.it (not visible if running python on the desktop).
-        # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
-        pygame.display.update((player.prev_rect, player.rect))
+        pygame.display.update()
 
         # Limit the framerate to limit the player's visual movement speed
         clock.tick(GAME_SPEED)
 
 
-# Runs the code if the file run is this one (python convention)
+# Runs the code
 if __name__ == '__main__':
     # Initialize pygame
     pygame.init()

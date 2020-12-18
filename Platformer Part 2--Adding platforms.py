@@ -4,6 +4,7 @@ Author: Arthur Goetzke-Coburn
 This is the second part in a simple 4-part platformer.
 In this part, we create a platform class, and we also design the level (most basic level design, by manually writing
 the coordinates for each platform).
+Copy over the code from part 1. New class template needed: Platform
 """
 import pygame
 
@@ -131,6 +132,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += int(self.speed_y)
 
 
+"New code. Use Platform class template"
 # Create the platform class, also based on pygame.sprite.Sprite
 class Platform(pygame.sprite.Sprite):
 
@@ -149,6 +151,11 @@ class Platform(pygame.sprite.Sprite):
         self.rect.y = y
 
 
+"""
+This function can be given to the students to copy-paste, it is not included in library.py so they can modify it if 
+they want, but making them code it would just be tedious and not bring any useful knowledge as it is
+just creating a bunch of Platform objects.
+"""
 # Create a level function, which will contain all the platform creation
 # It takes two sprite groups, which are used for drawing and collisions of the platforms
 def level(all_sprites_group, platform_group):
@@ -174,7 +181,7 @@ def level(all_sprites_group, platform_group):
     for platform in platforms:
         all_sprites_group.add(platform)
         platform_group.add(platform)
-
+"End"
 
 # Create the game function
 def game():
@@ -189,9 +196,11 @@ def game():
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
 
+    "New code"
     # Create a group for the platforms and call the level function
     platform_group = pygame.sprite.Group()
     level(all_sprites, platform_group)
+    "End"
 
     # Update all the sprites and draw the entire screen once, since during gameplay, it will only update the part
     # where the player is
@@ -212,16 +221,13 @@ def game():
         all_sprites.draw(screen)
 
         # Refresh the display
-        # Updating only the section of the display where the player was, and where the player is provides a
-        # very significant performance boost on repl.it (not visible if running python on the desktop).
-        # On the desktop, it does cause the player rectangle to have some deformations (not the case on repl.it)
-        pygame.display.update((player.prev_rect, player.rect))
+        pygame.display.update()
 
-        # Limit the framerate to limit the player's visual movement speed
+        # Limit the framerate to limit the player's movement speed
         clock.tick(GAME_SPEED)
 
 
-# Runs the code if the file run is this one (python convention)
+# Runs the code
 if __name__ == '__main__':
     # Initialize pygame
     pygame.init()
