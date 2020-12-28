@@ -45,22 +45,6 @@ class LevelEditor(arcade.View):
         self.error_msg = None
 
     def setup(self):
-        load_img_btn = UIFlatButton('Load custom platform image', 1200, 100, 375, 50, id='loadimgbtn')
-        load_img_btn.set_style_attrs(
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE
-        )
-
-        @load_img_btn.event('on_click')
-        def load_img():
-            from tkinter.filedialog import askopenfilename
-            import tkinter
-            tkinter.Tk().withdraw()
-            filename = askopenfilename()
-            if filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png'):
-                self.img = arcade.load_texture(filename)
-
-        self.ui_manager.add_ui_element(load_img_btn)
 
         pl_size_box = UIInputBox(1200, 730, 200, 40, "150", 'pl_size')
 

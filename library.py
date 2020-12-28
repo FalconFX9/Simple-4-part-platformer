@@ -1,11 +1,12 @@
 from os import path
 import pygame
 from PIL import ImageColor
+from typing import Tuple
 
 
 class Platform(pygame.sprite.Sprite):
 
-    def __init__(self, width: int, x: int, y: int, color: tuple[int, int, int] = (255, 0, 0)):
+    def __init__(self, width: int, x: int, y: int, color: Tuple[int, int, int] = (255, 0, 0)):
         """
         A class for the platforms
         :param width: the width of the platform

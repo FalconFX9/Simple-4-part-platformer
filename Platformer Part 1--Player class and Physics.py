@@ -89,40 +89,47 @@ class Player(pygame.sprite.Sprite):
         # As with the gravity function, it is not necessary to use a function here (yet)
         self.speed_y = -7
 
-    def update(self):
+    def update_mvm(self, accel_mult, friction) -> None:
         # Overriding of the pygame.sprite.Sprite.update function, in order to have our own movement/physics
 
         # Apply gravity
         self.gravity()
 
         # Check if the player is heading out of bounds on the Y-axis
-        if (self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.speed_y > 0) or (self.rect.y <= 0 and self.speed_y < 0):
+        if (self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.speed_y > 0) or (
+                self.rect.y <= 0 and self.speed_y < 0):
             self.speed_y = 0
 
         # Check if the player is heading out of bounds on the X-axis
-        if (self.rect.x + self.rect.width >= SCREEN_WIDTH and self.speed_x > 0) or (self.rect.x <= 0 and self.speed_x < 0):
+        if (self.rect.x + self.rect.width >= SCREEN_WIDTH and self.speed_x > 0) or (
+                self.rect.x <= 0 and self.speed_x < 0):
             self.speed_x = 0
 
         # Apply the acceleration (depending on which key is presses)
         if self.direction == 1:
             if self.speed_x > -4:
-                self.speed_x -= 0.1 * ACCELERATION_MULTIPLIER
+                self.speed_x -= 0.1 * accel_mult
         elif self.direction == 2:
             if self.speed_x < 4:
-                self.speed_x += 0.1 * ACCELERATION_MULTIPLIER
+                self.speed_x += 0.1 * accel_mult
 
         # Apply friction to gradually slow the player down when no key is pressed (only in the X-axis)
         else:
-            if self.speed_x > FRICTION:
-                self.speed_x -= FRICTION
-            elif self.speed_x < -FRICTION:
-                self.speed_x += FRICTION
+            if self.speed_x > friction:
+                self.speed_x -= friction
+            elif self.speed_x < -friction:
+                self.speed_x += friction
             else:
                 self.speed_x = 0
 
-        # Update the player's position based on the speed.
+        # Update the position on the X-axis with the current speed
         self.rect.x += int(self.speed_x)
+
+        # Update the position on the Y-axis with the current speed
         self.rect.y += int(self.speed_y)
+
+    def update(self, *args, **kwargs) -> None:
+        self.update_mvm(ACCELERATION_MULTIPLIER, FRICTION)
 
 
 # The actual game loop
