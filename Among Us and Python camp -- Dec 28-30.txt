@@ -1,0 +1,110 @@
+﻿NOTES:
+
+
+Software required (ideally installed before camp):
+Python 3.7+
+Pycharm (recommended)
+Level editor -- Windows link :
+                -- MacOS link :
+        N.B: As the level editor is not signed software (since it is made by myself), it will give an “unknown developer” warning (MacOS), or a “this app is unsafe” warning (Windows). It is completely fine, and the source code for the level editor is provided with the GitHub link.
+--Note for email to parents: If they are not comfortable installing unsigned software, they can instead install the arcade library via pip. This might require installing Microsoft Visual C++ 14.0 (instructions and links will be added later).
+
+
+IMPORTANT NOTES FOR RUNNING THE CAMP:
+Code is explained in comments. Please try to use them to explain the code to the students so they understand what they are doing.
+Any new code/modifications to the code in each part is indicated in the Sensei code in the Sensei package for better clarity.
+There will be 2 github repos:
+-Sensei package: https://github.com/FalconFX9/Simple-4-part-platformer
+        -Contents: All the source code + instructions + level editor
+-Student package: https://github.com/FalconFX9/PlatformerStudentPackage
+        -Contents: Class templates, library.py, level editor
+
+
+SEND TO PARENTS:
+Python packages: https://github.com/FalconFX9/PlatformerStudentPackage
+Download Python: Download Python | Python.org
+Download Pycharm (Community): Download PyCharm: Python IDE for Professional Developers by JetBrains
+Bluestacks: Download Bluestacks - App Player on PC - Windows and Mac
+        Among Us: Download from Play Store
+
+
+Libraries required -- will be installed during camp:
+Pygame (no dependencies)
+Pillow (fork of PIL)
+
+
+For Among Us:
+-a tablet/mobile device is ideal (download from play store)
+-otherwise: Bluestacks
+
+
+Notes to self:
+-compile the level editor to avoid issues with arcade install -- needs testing on MacOS
+
+
+Link to code:
+https://github.com/FalconFX9/Simple-4-part-platformer
+
+
+
+
+INSTRUCTIONS FOR CAMP :
+
+
+Among Us and Python 3-half-day camp (Senseis)
+
+
+Among Us Facilitation Options and Considerations:
+Among Us is free on mobile devices and tablets.
+If you intend to play on PC, there are app emulators you can download to keep it free, (ex: Bluestacks).
+For a legitimate PC download, I recommend using Steam to download and install.  It is $5 each.  
+Among Us does allow crossplay between devices so you can use a combination of PC and mobile devices.
+Here is a link to a quick guide for setting up local wifi and network games. https://gamewith.net/among-us-wiki/article/show/22150 It is a pretty intuitive process for actual gameplay and most the kids will probably teach us on how to setup a good, local match.
+
+
+Python:
+-we'll be using PyCharm as our IDE for the camp, as it is free and offers a bunch of creature comfort features that will make packages (like pygame) much easier to install.
+-Pygame library, the most common library for python game development.
+-the custom platformer files, that will facilitate the camp by having pre-written code for some things (physics engine, level editor).
+-pycharm will run on basically any laptop/desktop computer. Tablets WILL NOT do.
+
+
+Paint.net:
+-free
+-runs on any laptop/desktop computer
+-will be used to make custom sprites
+-many similar online tools if you want to use a different one.
+
+
+Software Required:
+Camp will be facilitated using Among Us and Python (PyCharm). Among Us costs were described above. 
+Among Us: https://store.steampowered.com/app/945360/Among_Us/
+
+
+Suggested Camp Timeline (Adjust as you see fit):
+Most of the instructions/explanations are as comments in the code (see GitHub repo).
+DAY 1:         
+        Ice Breaker
+        Among Us Freeplay 20-30min
+        Intro to python (syntax, variables, lists, while loops, functions... -- link to be provided later)
+        Among Us Freeplay
+        Pygame platformer Part 1-A moving square (depending on the level, intro to python could take all day, which is fine)
+
+
+DAY 2:         
+        Ice Breaker
+        Among Us Freeplay
+        Pygame platformer Part 2-Adding platforms
+        Pygame platformer Part 3-Adding the physics engine
+        Pygame platformer Part 4-Adding a victory screen
+        Pygame platformer Part 5-Complete overhaul of the game to include a level system, and allow the students to build custom levels (this is probably the hardest part of the camp).
+        Among Us Freeplay
+
+
+DAY 3:
+        Ice Breaker
+        Among Us Freeplay
+        Pygame platformer Part 5 (continue)
+        Pygame platformer Part 6 (if time is left after part 5 is done)-Adding music to the game
+        Among Us Freeplay
+        If any time is left, this time can be used to let the ninjas customize their game by using images instead of Pygame surfaces (will include instructions as comment in Player class).
